@@ -1,0 +1,12 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    volumes:
+      - ./backend:/usr/src/app
+    command: npm start
