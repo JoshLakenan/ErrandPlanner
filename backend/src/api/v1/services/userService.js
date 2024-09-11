@@ -1,5 +1,5 @@
 import User from "../models/user.js";
-import { ConflictError } from "../utils/errors.js";
+import { ConflictError } from "../../utils/errors.js";
 import bcrypt from "bcrypt";
 
 /**

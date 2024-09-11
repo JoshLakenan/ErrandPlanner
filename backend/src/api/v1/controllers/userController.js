@@ -1,5 +1,5 @@
 import { createUser } from "../services/userService.js";
-import asyncCatchError from "../utils/asyncCatchError.js";
+import asyncCatchError from "../../utils/asyncCatchError.js";
 
 /**
  * Parses the request body, interacts with the userService to create a new user,
