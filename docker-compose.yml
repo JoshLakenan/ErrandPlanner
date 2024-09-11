@@ -26,8 +26,6 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/usr/src/app
     command: npm start
 
 # Ensures that the volumes persist data across container restarts
