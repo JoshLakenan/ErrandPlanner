@@ -25,10 +25,15 @@ services:
       FRONTEND_PORT: ${FRONTEND_PORT}
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_PORT}:3000"
     depends_on:
       - postgres
-    command: npm start
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/app/wait-for-it.sh postgres:${POSTGRES_PORT} -- npm start",
+      ]
 
 # Ensures that the volumes persist data across container restarts
 volumes:

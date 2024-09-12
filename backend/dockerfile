@@ -19,5 +19,11 @@ COPY . .
 # Expose the port that the app will run on
 EXPOSE 3000
 
+# Copy the wait-for-it script to ensure PostgreSQL is ready
+COPY wait-for-it.sh /app/wait-for-it.sh
+
+# Grant permissions for the wait-for-it script to be executable
+RUN chmod +x /app/wait-for-it.sh
+
 # Start the Express app
 CMD ["npm", "start"]
