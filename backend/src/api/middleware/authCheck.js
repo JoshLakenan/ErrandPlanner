@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import asyncCatchError from "../utils/asyncCatchError";
-import { UnauthorizedError } from "../utils/errors";
+import asyncCatchError from "../utils/asyncCatchError.js";
+import { UnauthorizedError } from "../utils/errors.js";
 
 /**
  * Middleware function to check if the user is authenticated, by verifying the

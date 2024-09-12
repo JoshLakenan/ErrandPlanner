@@ -1,8 +1,9 @@
 import express from "express";
 import initDBService from "./api/v1/services/initDBService.js";
-import userRouter from "./api/v1/routes/userRouter.js";
 import errorHandler from "./api/middleware/errorHandler.js";
 import cors from "cors";
+import userRouter from "./api/v1/routes/userRouter.js";
+import locationRouter from "./api/v1/routes/locationRouter.js";
 
 initDBService();
 
@@ -20,8 +21,9 @@ app.use(
   })
 );
 
-// Mount the user router at the /api/v1/users path
+// Mount routers for each resource on the v1 API
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/locations", locationRouter);
 
 // Mount the error handler middleware
 app.use(errorHandler);

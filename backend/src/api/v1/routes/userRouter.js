@@ -6,6 +6,7 @@ import {
 
 const userRouter = Router();
 
+// Define routes for the user resource
 userRouter.post("/", createUserHandler);
 userRouter.post("/login", loginUserHandler);
 

@@ -28,5 +28,5 @@ export const loginUserHandler = asyncCatchError(async (req, res) => {
 
   const token = await loginUser(username, password);
 
-  res.status(200).json({ message: "Login successful", token });
+  res.status(200).json({ message: "Login successful", token, username });
 });
