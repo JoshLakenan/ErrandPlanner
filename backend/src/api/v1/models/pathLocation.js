@@ -35,6 +35,13 @@ const PathLocation = sequelize.define(
   {
     tableName: "paths_locations",
     timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        // Composite unique constraint
+        fields: ["path_id", "location_id", "position"],
+      },
+    ],
   }
 );
 

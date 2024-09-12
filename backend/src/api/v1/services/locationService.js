@@ -31,7 +31,7 @@ export const createOrUpdateLocation = async (
       last_used: new Date(),
     });
 
-    return location.get({ plain: true });
+    return location;
   } catch (error) {
     console.error("Error creating location:", error);
 
@@ -83,7 +83,7 @@ export const getOneLocation = async (userId, locationId) => {
       throw new NotFoundError("Location not found");
     }
 
-    return location.get({ plain: true });
+    return location;
   } catch (error) {
     console.error("Error getting location:", error);
     throw error;
