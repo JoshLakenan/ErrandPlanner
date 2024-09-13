@@ -18,6 +18,8 @@ class OptimizedPath {
 
     await optiPath.fetchGoogleRouteData();
 
+    optiPath.reArrangeWaypoints();
+
     return optiPath;
   }
 
@@ -152,6 +154,24 @@ class OptimizedPath {
     } catch (error) {
       console.error("Error sending google routes API request:", error);
       throw new ExternalServiceError("Error connecting to external service");
+    }
+  }
+
+  /**
+   * Re-arranges the waypoints based on the optimized indices provided by the
+   * Google Maps Routes API.
+   * @argument {void}
+   * @returns {void}
+   */
+  reArrangeWaypoints() {
+    if (this.apiResponse.routes[0].optimizedIntermediateWaypointIndex) {
+      const optimizedIndices =
+        this.apiResponse.routes[0].optimizedIntermediateWaypointIndex;
+
+      // Re-arrange the waypoints based on the optimized indices
+      this.optimizedWaypoints = optimizedIndices.map((index) => {
+        return this.waypoints[index];
+      });
     }
   }
 }
