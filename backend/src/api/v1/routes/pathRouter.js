@@ -7,6 +7,7 @@ import {
   addLocationToPathHandler,
   getOnePathWithLocationsHandler,
   removeLocationFromPathHandler,
+  getOptimizedPathHandler,
 } from "../controllers/pathController.js";
 import authCheck from "../../middleware/authCheck.js";
 
@@ -19,6 +20,7 @@ pathRouter.use(authCheck);
 pathRouter.post("/", createPathHandler);
 pathRouter.get("/", getAllPathsHandler);
 pathRouter.put("/:pathId", updatePathHandler);
+pathRouter.patch("/:pathId/calculate", getOptimizedPathHandler);
 pathRouter.delete("/:pathId", deletePathHandler);
 
 // Define routes for interacting with locations in a path
