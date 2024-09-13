@@ -3,12 +3,22 @@ import { updatePath } from "./pathService.js";
 import { BadRequestError, ExternalServiceError } from "../../utils/errors.js";
 import axios from "axios";
 
+/**
+ * Represents a service for calculating and optimizing paths.
+ * @class
+ */
 class OptimizedPath {
-  static async init(userId, pathId) {
-    // Get the path with locations
+  /**
+   * Calculates the optimized path data for a given path, updates the path with
+   * the optimized data, and returns the updated path.
+   * @param {number} userId - The ID of the user.
+   * @param {number} pathId - The ID of the path.
+   * @returns {object} - The updated path object with the optimized path data.
+   */
+  static async calculateOptimizedPath(userId, pathId, axiosInstance = axios) {
     const path = await getOnePathWithLocations(userId, pathId);
 
-    const optiPath = new OptimizedPath(path);
+    const optiPath = new OptimizedPath(path, axiosInstance);
 
     optiPath.parseLocations();
 
@@ -26,7 +36,15 @@ class OptimizedPath {
 
     optiPath.generateDirectionsUrl();
 
-    return optiPath;
+    // Update the path with optemized path data
+    const updatedPath = await updatePath(userId, pathId, {
+      directions_url: optiPath.directionsUrl,
+      drive_time_seconds: optiPath.driveTimeSeconds,
+      distance_meters: optiPath.distanceMeters,
+      url_generated_at: optiPath.urlGeneratedAt,
+    });
+
+    return updatedPath;
   }
 
   static GOOGLE_ROUTES_REQ_BODY = {
@@ -53,7 +71,8 @@ class OptimizedPath {
 
   static GOOGLE_DIRECTIONS_BASE_URL = "https://www.google.com/maps/dir/?api=1";
 
-  constructor(path) {
+  constructor(path, axiosInstance = axios) {
+    this.axiosInstance = axiosInstance;
     this.locations = path.locations;
     this.origin = null;
     this.destination = null;
@@ -71,7 +90,7 @@ class OptimizedPath {
     this.urlGeneratedAt = null;
   }
 
-  /*
+  /**
    * Initializes the origin, destination, waypoints, and uniqueIds properties
    * ensures that the path has at leas
    * @argument {void}
@@ -128,7 +147,7 @@ class OptimizedPath {
    * @argument {void}
    * @returns {void}
    */
-  async prepareApiRequest() {
+  prepareApiRequest() {
     // Format and add origin and destination request body
     this.reqBody.origin = { placeId: this.origin.google_place_id };
     this.reqBody.destination = { placeId: this.destination.google_place_id };
@@ -157,7 +176,7 @@ class OptimizedPath {
    */
   async fetchGoogleRouteData() {
     try {
-      const response = await axios.post(
+      const response = await this.axiosInstance.post(
         OptimizedPath.GOOGLE_ROUTES_API_URL,
         this.reqBody,
         { headers: this.reqHeaders }
@@ -176,7 +195,7 @@ class OptimizedPath {
    * @returns {void}
    * @throws {ExternalServiceError} - An error if the API response is invalid.
    */
-  async validateApiResponse() {
+  validateApiResponse() {
     // Throw appropriate errors if the API response is invalid
     if (!this.apiResponse.routes || this.apiResponse.routes.length === 0) {
       throw new ExternalServiceError("Invalid External API response");
@@ -292,4 +311,4 @@ class OptimizedPath {
   }
 }
 
-export default OptimizedPath.init;
+export default OptimizedPath.calculateOptimizedPath;
