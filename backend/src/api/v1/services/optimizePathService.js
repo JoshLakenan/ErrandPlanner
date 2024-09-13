@@ -20,6 +20,8 @@ class OptimizedPath {
 
     optiPath.reArrangeWaypoints();
 
+    optiPath.generateDirectionsUrl();
+
     return optiPath;
   }
 
@@ -45,6 +47,8 @@ class OptimizedPath {
   static GOOGLE_ROUTES_API_URL =
     "https://routes.googleapis.com/directions/v2:computeRoutes";
 
+  static GOOGLE_DIRECTIONS_BASE_URL = "https://www.google.com/maps/dir/?api=1";
+
   constructor(path) {
     this.user_id = path.user_id;
     this.id = path.id;
@@ -52,6 +56,8 @@ class OptimizedPath {
     this.locations = path.locations;
     this.origin = null;
     this.destination = null;
+    this.urlComponents = [OptimizedPath.GOOGLE_DIRECTIONS_BASE_URL];
+    this.directionsUrl = null;
     this.waypoints = [];
     this.uniqueLocationIds = new Set();
     this.reqBody = { ...OptimizedPath.GOOGLE_ROUTES_REQ_BODY };
@@ -173,6 +179,56 @@ class OptimizedPath {
         return this.waypoints[index];
       });
     }
+  }
+
+  /**
+   * Generates the final directions URL based on the origin, destination, and
+   * optimized waypoints.
+   * @argument {void}
+   * @returns {void}
+   */
+  generateDirectionsUrl() {
+    // Add the encoded origin and destination addresses to the URL
+    this.urlComponents.push(
+      `&origin=${encodeURIComponent(this.origin.address)}`
+    );
+    this.urlComponents.push(
+      `&destination=${encodeURIComponent(this.destination.address)}`
+    );
+
+    // Add the origin and destination place IDs to the URL
+    this.urlComponents.push(`&origin_place_id=${this.origin.google_place_id}`);
+    this.urlComponents.push(
+      `&destination_place_id=${this.destination.google_place_id}`
+    );
+
+    // When there is only one waypoint, add it's address and place ID to the URL
+    if (this.waypoints.length === 1) {
+      this.urlComponents.push(
+        `&waypoints=${encodeURIComponent(this.waypoints[0].address)}`
+      );
+
+      this.urlComponents.push(
+        `&waypoint_place_ids=${this.waypoints[0].google_place_id}`
+      );
+    } else if (this.waypoints.length > 1) {
+      // Join encoded optemized waypoint addresses and add them to the URL
+      const waypointAddressString = this.optimizedWaypoints
+        .map((waypoint) => encodeURIComponent(waypoint.address))
+        .join("|");
+
+      this.urlComponents.push(`&waypoints=${waypointAddressString}`);
+
+      // Join optimized waypoint place IDs and add them to the URL
+      const waypointPlaceIdString = this.optimizedWaypoints
+        .map((waypoint) => waypoint.google_place_id)
+        .join("|");
+
+      this.urlComponents.push(`&waypoint_place_ids=${waypointPlaceIdString}`);
+    }
+
+    // Join the URL components to create the final directions URL
+    this.directionsUrl = this.urlComponents.join("");
   }
 }
 
