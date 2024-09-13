@@ -18,6 +18,10 @@ class OptimizedPath {
 
     await optiPath.fetchGoogleRouteData();
 
+    optiPath.validateApiResponse();
+
+    optiPath.parseApiResponse();
+
     optiPath.reArrangeWaypoints();
 
     optiPath.generateDirectionsUrl();
@@ -50,18 +54,21 @@ class OptimizedPath {
   static GOOGLE_DIRECTIONS_BASE_URL = "https://www.google.com/maps/dir/?api=1";
 
   constructor(path) {
-    this.user_id = path.user_id;
-    this.id = path.id;
-    this.name = path.name;
     this.locations = path.locations;
     this.origin = null;
     this.destination = null;
+    this.waypoints = [];
+    this.optimizedWaypoints = [];
+    this.uniqueLocationIds = new Set();
     this.urlComponents = [OptimizedPath.GOOGLE_DIRECTIONS_BASE_URL];
     this.directionsUrl = null;
-    this.waypoints = [];
-    this.uniqueLocationIds = new Set();
     this.reqBody = { ...OptimizedPath.GOOGLE_ROUTES_REQ_BODY };
     this.reqHeaders = { ...OptimizedPath.GOOGLE_ROUTES_REQ_HEADERS };
+    this.apiResponse = null;
+    this.optimizedWaypointIndices = [];
+    this.driveTimeSeconds = null;
+    this.distanceMeters = null;
+    this.urlGeneratedAt = null;
   }
 
   /*
@@ -164,18 +171,68 @@ class OptimizedPath {
   }
 
   /**
-   * Re-arranges the waypoints based on the optimized indices provided by the
-   * Google Maps Routes API.
+   * Validates the API response to ensure that it contains the necessary data.
+   * @argument {void}
+   * @returns {void}
+   * @throws {ExternalServiceError} - An error if the API response is invalid.
+   */
+  async validateApiResponse() {
+    // Throw appropriate errors if the API response is invalid
+    if (!this.apiResponse.routes || this.apiResponse.routes.length === 0) {
+      throw new ExternalServiceError("Invalid External API response");
+    }
+
+    if (!this.apiResponse.routes[0].duration) {
+      throw new ExternalServiceError("Invalid drive time in API response");
+    }
+
+    if (!this.apiResponse.routes[0].distanceMeters) {
+      throw new ExternalServiceError("Invalid distance in API response");
+    }
+
+    // If we have more than one waypoint
+    if (this.waypoints.length > 1) {
+      // Ensure that the optimized waypoint indices are present in the API response
+      const indices =
+        this.apiResponse.routes[0].optimizedIntermediateWaypointIndex;
+
+      if (!indices || indices.length !== this.waypoints.length) {
+        throw new ExternalServiceError(
+          "Invalid optimized waypoint indices in API response"
+        );
+      }
+    }
+  }
+
+  /**
+   * Extracts the drive time, distance, and optimized waypoint indices from the
+   * API response.
+   * @argument {void}
+   * @returns {void}
+   * @throws {ExternalServiceError} - An error if the API response is invalid.
+   */
+  parseApiResponse() {
+    // Extract the drive time and distance from the API response
+    this.driveTimeSeconds = this.apiResponse.routes[0].duration.slice(0, -1);
+    this.distanceMeters = this.apiResponse.routes[0].distanceMeters;
+
+    // Extract the optimized waypoint indices from the API response if they exist
+    if (this.waypoints.length > 1) {
+      this.optimizedWaypointIndices =
+        this.apiResponse.routes[0].optimizedIntermediateWaypointIndex;
+    }
+  }
+
+  /**
+   * Sets the optimizedWaypoints property if there at least two waypoints,
+   * by re-arranging the waypoints based on the optimized indices.
    * @argument {void}
    * @returns {void}
    */
   reArrangeWaypoints() {
-    if (this.apiResponse.routes[0].optimizedIntermediateWaypointIndex) {
-      const optimizedIndices =
-        this.apiResponse.routes[0].optimizedIntermediateWaypointIndex;
-
+    if (this.waypoints.length > 1) {
       // Re-arrange the waypoints based on the optimized indices
-      this.optimizedWaypoints = optimizedIndices.map((index) => {
+      this.optimizedWaypoints = this.optimizedWaypointIndices.map((index) => {
         return this.waypoints[index];
       });
     }
@@ -183,7 +240,7 @@ class OptimizedPath {
 
   /**
    * Generates the final directions URL based on the origin, destination, and
-   * optimized waypoints.
+   * optimized waypoints and sets the URL generated timestamp.
    * @argument {void}
    * @returns {void}
    */
@@ -229,6 +286,9 @@ class OptimizedPath {
 
     // Join the URL components to create the final directions URL
     this.directionsUrl = this.urlComponents.join("");
+
+    // Set the URL generated timestamp to the current date and time
+    this.urlGeneratedAt = new Date().toISOString();
   }
 }
 
