@@ -14,9 +14,16 @@ class OptimizedPath {
    * the optimized data, and returns the updated path.
    * @param {number} userId - The ID of the user.
    * @param {number} pathId - The ID of the path.
+   * @param {object} axiosInstance - An Axios instance for making HTTP requests.
+   * @param {object} redis - A Redis client for caching data.
    * @returns {object} - The updated path object with the optimized path data.
    */
-  static async calculateOptimizedPath(userId, pathId, axiosInstance = axios) {
+  static async calculateOptimizedPath(
+    userId,
+    pathId,
+    axiosInstance = axios,
+    redis = redisClient
+  ) {
     const path = await getOnePathWithLocations(userId, pathId);
 
     const optiPath = new OptimizedPath(path, axiosInstance);
@@ -28,7 +35,7 @@ class OptimizedPath {
     optiPath.generateRedisKey();
 
     // Check if the optimized path data is cached in Redis
-    const cachedPath = await redisClient.get(optiPath.redisKey);
+    const cachedPath = await redis.get(optiPath.redisKey);
 
     if (cachedPath) {
       return JSON.parse(cachedPath);
@@ -55,7 +62,7 @@ class OptimizedPath {
     });
 
     // Cache the optimized path data in Redis for 60 seconds
-    await redisClient.set(optiPath.redisKey, JSON.stringify(updatedPath), {
+    await redis.set(optiPath.redisKey, JSON.stringify(updatedPath), {
       EX: process.env.REDIS_KEY_TTL,
     });
 
