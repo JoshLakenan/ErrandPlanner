@@ -1,6 +1,7 @@
 import { getOnePathWithLocations } from "./pathLocationService.js";
 import { updatePath } from "./pathService.js";
 import { BadRequestError } from "../../utils/errors.js";
+import axios from "axios";
 
 class OptimizedPath {
   static async init(userId, pathId) {
@@ -13,8 +14,30 @@ class OptimizedPath {
 
     optiPath.validateLocations();
 
+    optiPath.prepareApiRequest();
+
     return optiPath;
   }
+
+  static GOOGLE_ROUTES_REQ_BODY = {
+    travelMode: "DRIVE",
+    routingPreference: "TRAFFIC_AWARE",
+    computeAlternativeRoutes: false,
+    routeModifiers: {
+      avoidTolls: false,
+      avoidHighways: false,
+      avoidFerries: false,
+    },
+    languageCode: "en-US",
+    units: "IMPERIAL",
+  };
+
+  static GOOGLE_ROUTES_REQ_HEADERS = {
+    "Content-Type": "application/json",
+    "X-Goog-Api-Key": process.env.GOOGLE_MAPS_API_KEY,
+    "X-Goog-FieldMask":
+      "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline",
+  };
 
   constructor(path) {
     this.user_id = path.user_id;
@@ -25,6 +48,8 @@ class OptimizedPath {
     this.destination = null;
     this.waypoints = [];
     this.uniqueLocationIds = new Set();
+    this.reqBody = { ...OptimizedPath.GOOGLE_ROUTES_REQ_BODY };
+    this.reqHeaders = { ...OptimizedPath.GOOGLE_ROUTES_REQ_HEADERS };
   }
 
   /*
@@ -75,6 +100,34 @@ class OptimizedPath {
 
     if (validationErrors.length > 0) {
       throw new BadRequestError(validationErrors.join("\n"));
+    }
+  }
+
+  /**
+   * Prepares the reqBody and reqHeaders properties for sending a request to the
+   * Google Maps Routes API.
+   * @argument {void}
+   * @returns {void}
+   */
+  async prepareApiRequest() {
+    // Format and add origin and destination request body
+    this.reqBody.origin = { placeId: this.origin.google_place_id };
+    this.reqBody.destination = { placeId: this.destination.google_place_id };
+
+    if (this.waypoints.length > 0) {
+      // Format and add intermediate waypoints to the request body
+      this.reqBody.intermediates = this.waypoints.map(({ google_place_id }) => {
+        return { placeId: google_place_id };
+      });
+    }
+
+    if (this.waypoints.length > 1) {
+      // Optimize the order of the waypoints
+      this.reqBody.optimizeWaypointOrder = true;
+
+      // Update request headers to include the optimized_intermediate_waypoint_index field
+      this.reqHeaders["X-Goog-FieldMask"] +=
+        ",routes.optimized_intermediate_waypoint_index";
     }
   }
 }
