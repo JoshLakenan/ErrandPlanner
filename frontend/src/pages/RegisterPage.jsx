@@ -104,8 +104,14 @@ const RegisterPage = () => {
       handleClearErrors();
 
       const user = await registerUser(username, password);
+
       // Redirect to the login page after successful registration
-      navigate("/login", { state: { message: "User registered" } });
+      navigate("/login", {
+        replace: true,
+        state: {
+          alert: { message: "User registered", type: "success" },
+        },
+      });
     } catch (error) {
       setRegisterError(error.response?.data?.message || "An error occurred");
     }

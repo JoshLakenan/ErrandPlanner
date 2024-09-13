@@ -19,38 +19,25 @@ const LoginPage = () => {
     username: "",
     password: "",
   });
-
   const [formErrors, setFormErrors] = useState({
     username: "",
     password: "",
   });
-
   const [loginError, setLoginError] = useState("");
-  const [message, setMessage] = useState("");
-
-  // Set the initial message from the location state if present
-  useEffect(() => {
-    if (location.state?.message) {
-      setMessage(location.state.message);
-    }
-  }, [location.state]);
 
   /**
-   * Clears the message state if present.
+   * Clears location alert state
+   * @returns {void}
    */
-  const handleClearMessage = () => {
-    if (message) {
-      setMessage("");
-    }
-    // Remove the message from location.state after displaying it if present
-    if (location.state?.message) {
+  const handleClearAlert = () => {
+    if (location.state?.alert) {
       navigate(location.pathname, { replace: true, state: {} });
     }
   };
 
   const handleInputChange = (e) => {
     handleClearErrors();
-    handleClearMessage();
+    handleClearAlert();
 
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -116,7 +103,20 @@ const LoginPage = () => {
     const { username, password } = formData;
 
     try {
+      // Get the user data from the server
       const user = await loginUser(username, password);
+
+      // Store the jwt token in session storage
+      sessionStorage.setItem("jwt", user.token);
+
+      // Redirect to the main page
+      navigate("/", {
+        replace: true,
+        state: {
+          alert: { message: `Welcome, ${user.username}!`, type: "success" },
+          user: { username: user.username },
+        },
+      });
     } catch (error) {
       setLoginError(error.response?.data?.message || "An error occurred");
     }
@@ -129,9 +129,9 @@ const LoginPage = () => {
           Login
         </Typography>
 
-        {message && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {message}
+        {location.state?.alert && (
+          <Alert severity={location.state.alert.type} sx={{ mb: 2 }}>
+            {location.state.alert.message}
           </Alert>
         )}
 
