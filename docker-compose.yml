@@ -11,6 +11,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7.4.0
+    container_name: redis_cache
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+
   backend:
     build:
       context: ./backend
@@ -24,17 +32,24 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
       FRONTEND_PORT: ${FRONTEND_PORT}
       JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_KEY_TTL: ${REDIS_KEY_TTL}
+      REDIS_HOST: redis
     ports:
       - "${BACKEND_PORT}:3000"
     depends_on:
       - postgres
+      - redis
     command:
       [
         "/bin/bash",
         "-c",
-        "/app/wait-for-it.sh postgres:${POSTGRES_PORT} -- npm start",
+        "/app/wait-for-it.sh postgres:${POSTGRES_PORT} -- /app/wait-for-it.sh redis:${REDIS_PORT} -- npm start",
       ]
 
 # Ensures that the volumes persist data across container restarts
 volumes:
   postgres_data:
+  redis_data:

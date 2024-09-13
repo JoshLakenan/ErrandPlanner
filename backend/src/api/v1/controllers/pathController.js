@@ -9,7 +9,18 @@ import {
   addLocationToPath,
   removeLocationFromPath,
 } from "../services/pathLocationService.js";
+import getOptimizedPath from "../services/optimizePathService.js";
 import asyncCatchError from "../../utils/asyncCatchError.js";
+
+// Get an optimized path
+export const getOptimizedPathHandler = asyncCatchError(async (req, res) => {
+  const userId = req.user.id;
+  const pathId = req.params.pathId;
+
+  const optimizedPath = await getOptimizedPath(userId, pathId);
+
+  res.status(200).json(optimizedPath);
+});
 
 // Create a new path
 export const createPathHandler = asyncCatchError(async (req, res) => {

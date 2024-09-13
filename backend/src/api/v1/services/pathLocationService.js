@@ -1,4 +1,5 @@
 import Path from "../models/path.js";
+import { Op } from "sequelize";
 import Location from "../models/location.js";
 import PathLocation from "../models/pathLocation.js";
 import { createOrUpdateLocation } from "./locationService.js";
@@ -90,6 +91,22 @@ export const addLocationToPath = async (
         });
       }
     } else {
+      // If the waypoint position is already the origin or destination position
+      const existingLocation = await PathLocation.findOne({
+        where: {
+          path_id: pathId,
+          location_id: location.id,
+          position: {
+            [Op.or]: ["origin", "destination"],
+          },
+        },
+      });
+
+      if (existingLocation) {
+        throw new BadRequestError(
+          "Location already exists as origin or destination"
+        );
+      }
       /*
         Upsert "waypoint" locations to the path, ensuring that there are no
         duplicate waypoint locations, but allowing multiple waypoints to be
