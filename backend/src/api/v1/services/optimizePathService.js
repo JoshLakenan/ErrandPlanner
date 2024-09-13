@@ -1,6 +1,6 @@
 import { getOnePathWithLocations } from "./pathLocationService.js";
 import { updatePath } from "./pathService.js";
-import { BadRequestError } from "../../utils/errors.js";
+import { BadRequestError, ExternalServiceError } from "../../utils/errors.js";
 import axios from "axios";
 
 class OptimizedPath {
@@ -15,6 +15,8 @@ class OptimizedPath {
     optiPath.validateLocations();
 
     optiPath.prepareApiRequest();
+
+    await optiPath.fetchGoogleRouteData();
 
     return optiPath;
   }
@@ -35,9 +37,11 @@ class OptimizedPath {
   static GOOGLE_ROUTES_REQ_HEADERS = {
     "Content-Type": "application/json",
     "X-Goog-Api-Key": process.env.GOOGLE_MAPS_API_KEY,
-    "X-Goog-FieldMask":
-      "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline",
+    "X-Goog-FieldMask": "routes.duration,routes.distanceMeters",
   };
+
+  static GOOGLE_ROUTES_API_URL =
+    "https://routes.googleapis.com/directions/v2:computeRoutes";
 
   constructor(path) {
     this.user_id = path.user_id;
@@ -128,6 +132,26 @@ class OptimizedPath {
       // Update request headers to include the optimized_intermediate_waypoint_index field
       this.reqHeaders["X-Goog-FieldMask"] +=
         ",routes.optimized_intermediate_waypoint_index";
+    }
+  }
+
+  /**
+   * Sends a request to the Google Maps Routes API to optimize the path order.
+   * @argument {void}
+   * @returns {void}
+   */
+  async fetchGoogleRouteData() {
+    try {
+      const response = await axios.post(
+        OptimizedPath.GOOGLE_ROUTES_API_URL,
+        this.reqBody,
+        { headers: this.reqHeaders }
+      );
+
+      this.apiResponse = response.data;
+    } catch (error) {
+      console.error("Error sending google routes API request:", error);
+      throw new ExternalServiceError("Error connecting to external service");
     }
   }
 }

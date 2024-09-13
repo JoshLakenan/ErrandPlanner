@@ -29,3 +29,19 @@ export class NotFoundError extends AppError {
     super(message, 404, "NOT_FOUND");
   }
 }
+
+export class InternalServerError extends AppError {
+  constructor(
+    message = "This operation failed due to an internal server error"
+  ) {
+    super(message, 500, "INTERNAL_SERVER_ERROR");
+  }
+}
+
+export class ExternalServiceError extends AppError {
+  constructor(
+    message = "This operation failed due to an error in an external service"
+  ) {
+    super(message, 502, "EXTERNAL_SERVICE_ERROR");
+  }
+}
