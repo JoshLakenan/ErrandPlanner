@@ -1,6 +1,7 @@
 import { getOnePathWithLocations } from "./pathLocationService.js";
 import { updatePath } from "./pathService.js";
 import { BadRequestError, ExternalServiceError } from "../../utils/errors.js";
+import { redisClient } from "./redisService.js";
 import axios from "axios";
 
 /**
@@ -24,6 +25,15 @@ class OptimizedPath {
 
     optiPath.validateLocations();
 
+    optiPath.generateRedisKey();
+
+    // Check if the optimized path data is cached in Redis
+    const cachedPath = await redisClient.get(optiPath.redisKey);
+
+    if (cachedPath) {
+      return JSON.parse(cachedPath);
+    }
+
     optiPath.prepareApiRequest();
 
     await optiPath.fetchGoogleRouteData();
@@ -44,7 +54,33 @@ class OptimizedPath {
       url_generated_at: optiPath.urlGeneratedAt,
     });
 
+    // Cache the optimized path data in Redis for 60 seconds
+    await redisClient.set(optiPath.redisKey, JSON.stringify(updatedPath), {
+      EX: process.env.REDIS_KEY_TTL,
+    });
+
     return updatedPath;
+  }
+
+  /**
+   * Generates a Redis key for the optimized path based on the path ID and user ID.
+   * @argument {void}
+   * @returns {void}
+   */
+  generateRedisKey() {
+    // Collect components of the path / user / location data
+    let keyComponents = [
+      String(this.pathId),
+      String(this.userId),
+      this.origin.google_place_id,
+      this.destination.google_place_id,
+    ];
+
+    this.waypoints.forEach((waypoint) => {
+      keyComponents.push(waypoint.google_place_id);
+    });
+
+    this.redisKey = keyComponents.join(":");
   }
 
   static GOOGLE_ROUTES_REQ_BODY = {
@@ -72,10 +108,13 @@ class OptimizedPath {
   static GOOGLE_DIRECTIONS_BASE_URL = "https://www.google.com/maps/dir/?api=1";
 
   constructor(path, axiosInstance = axios) {
+    this.pathId = path.id;
+    this.userId = path.user_id;
     this.axiosInstance = axiosInstance;
     this.locations = path.locations;
     this.origin = null;
     this.destination = null;
+    this.redisKey = "";
     this.waypoints = [];
     this.optimizedWaypoints = [];
     this.uniqueLocationIds = new Set();

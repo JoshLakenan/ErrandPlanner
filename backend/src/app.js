@@ -1,13 +1,17 @@
 import express from "express";
 import initDBService from "./api/v1/services/initDBService.js";
+import { initRedis } from "./api/v1/services/redisService.js";
 import errorHandler from "./api/middleware/errorHandler.js";
 import cors from "cors";
 import userRouter from "./api/v1/routes/userRouter.js";
 import locationRouter from "./api/v1/routes/locationRouter.js";
 import pathRouter from "./api/v1/routes/pathRouter.js";
 
+// Initialize the database and Redis services
 initDBService();
+initRedis();
 
+// Create an Express application
 const app = express();
 
 // Parse JSON request bodies
