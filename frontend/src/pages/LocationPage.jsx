@@ -5,7 +5,7 @@ import {
   createOrUpdateLocation,
   deleteLocation,
 } from "../services/locationService";
-import LocationCard from "../components/LocationCard";
+import LocationList from "../components/LocationList";
 import GoogleLocationSearch from "../components/GoogleLocationSearch";
 
 const LocationPage = () => {
@@ -91,38 +91,19 @@ const LocationPage = () => {
 
   return (
     <>
-      <Container>
-        <GoogleLocationSearch
-          onPlaceChange={handleCreateLocation}
-          onRequestError={handleRequestError}
+      <GoogleLocationSearch
+        onPlaceChange={handleCreateLocation}
+        onRequestError={handleRequestError}
+      />
+      {error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <LocationList
+          locations={locations}
+          onSaveLocation={handleUpdateLocation}
+          onDeleteLocation={handleDeleteLocation}
         />
-
-        {error ? (
-          <Alert severity="error">{error}</Alert>
-        ) : (
-          <Box
-            sx={{
-              maxHeight: "90%", // Limit the height of the container
-              overflowY: "auto", // Make it scrollable
-              padding: 2, // Optional: Add some padding around the content
-              border: "1px solid #ddd", // Optional: Add a border for clarity
-              borderRadius: 2,
-            }}
-          >
-            <Grid container spacing={1}>
-              {locations.map((location) => (
-                <Grid item xs={12} key={location.id}>
-                  <LocationCard
-                    location={location}
-                    onSave={handleUpdateLocation}
-                    onDelete={handleDeleteLocation}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        )}
-      </Container>
+      )}
     </>
   );
 };

@@ -1,3 +1,4 @@
+import MainLayout from "./layouts/MainLayout.jsx";
 import PathPage from "./pages/PathPage.jsx";
 import Register from "./pages/RegisterPage.jsx";
 import Login from "./pages/LoginPage.jsx";
@@ -9,7 +10,14 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LocationPage />} />
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <LocationPage />
+            </MainLayout>
+          }
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </Routes>
