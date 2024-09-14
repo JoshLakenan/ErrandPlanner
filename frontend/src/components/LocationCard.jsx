@@ -61,18 +61,15 @@ const LocationCard = ({ location, onSave, onDelete }) => {
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               Address
             </Typography>
-            <Box id="addressValue">
-              <Typography variant="subtext1">{location.address}</Typography>
-            </Box>
+
+            <Typography variant="subtext1">{location.address}</Typography>
           </Box>
 
           <Box id={"name"} sx={{ width: 150 }}>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               Name
             </Typography>
-            <Box id="nameValue">
-              <Typography variant="subtext1">{location.name}</Typography>
-            </Box>
+            <Typography variant="subtext1">{location.name}</Typography>
           </Box>
 
           <Box

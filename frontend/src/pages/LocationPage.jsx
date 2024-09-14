@@ -1,4 +1,4 @@
-import { Container, Grid, Typography, Box, Alert } from "@mui/material";
+import { Alert } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   getAllLocations,
@@ -8,10 +8,16 @@ import {
 import LocationList from "../components/LocationList";
 import GoogleLocationSearch from "../components/GoogleLocationSearch";
 
+/**
+ * LocationPage component fetches all locations from the backend and displays them
+ * in a list.
+ * @returns {JSX.Element}
+ */
 const LocationPage = () => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState(null);
 
+  // Fetch all locations on mount and when error changes
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -47,7 +53,10 @@ const LocationPage = () => {
         address: googlePlace.formattedAddress,
       };
 
+      // Create the location in the backend
       const newLocation = await createOrUpdateLocation(location);
+
+      // Update the state to add the new location
       setLocations((prev) => [newLocation, ...prev]);
     } catch (error) {
       console.error(error);
@@ -57,8 +66,10 @@ const LocationPage = () => {
 
   const handleUpdateLocation = async (location) => {
     try {
+      // Update the location in the backend
       const updatedLocation = await createOrUpdateLocation(location);
 
+      // Update the state to reflect the updated location
       setLocations((prev) =>
         prev.map((loc) =>
           loc.id === updatedLocation.id ? updatedLocation : loc

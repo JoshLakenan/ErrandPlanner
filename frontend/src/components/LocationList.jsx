@@ -1,32 +1,36 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import LocationCard from "./LocationCard";
 
+/**
+ * LocationList component that displays a list of locations in a grid.
+ * @param {Object} props - The component props
+ * @param {Array} props.locations - The list of locations to display
+ * @param {Function} props.onSaveLocation - The callback function to call when
+ * the user updates a location name
+ * @param {Function} props.onDeleteLocation - The callback function to call
+ * when the user deletes a location
+ * @returns {JSX.Element}
+ */
 const LocationList = ({ locations, onSaveLocation, onDeleteLocation }) => {
-  if (locations.length === 0) {
-    return null;
-  }
-
   return (
-    <Box
-      sx={{
-        maxHeight: "90%",
-        overflowY: "auto",
-        padding: 2,
-        border: "1px solid #ddd",
-        borderRadius: 2,
-      }}
-    >
-      <Grid container spacing={1}>
-        {locations.map((location) => (
-          <Grid item xs={12} key={location.id}>
-            <LocationCard
-              location={location}
-              onSave={onSaveLocation}
-              onDelete={onDeleteLocation}
-            />
-          </Grid>
-        ))}
-      </Grid>
+    <Box>
+      {locations.length === 0 ? (
+        <Typography variant="h6" sx={{ margin: 2 }}>
+          No locations added
+        </Typography>
+      ) : (
+        <Grid container spacing={1}>
+          {locations.map((location) => (
+            <Grid item xs={12} key={location.id}>
+              <LocationCard
+                location={location}
+                onSave={onSaveLocation}
+                onDelete={onDeleteLocation}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 };

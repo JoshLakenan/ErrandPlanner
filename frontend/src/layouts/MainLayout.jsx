@@ -8,8 +8,8 @@ const MainLayout = ({ children }) => {
         maxHeight: "90vH",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-start", // Align items at the top
-        paddingTop: 3,
+        justifyContent: "flex-start",
+        alignItems: "center",
       }}
     >
       <Navbar />

@@ -3,7 +3,7 @@ import {
   PlacePicker,
 } from "@googlemaps/extended-component-library/react";
 
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Card, CardContent } from "@mui/material";
 
 const mapsApiKey = import.meta.env.VITE_MAPS_API_KEY;
 
@@ -31,18 +31,22 @@ const GoogleLocationSearch = ({ onPlaceChange, onRequestError }) => {
   };
 
   return (
-    <Box sx={{ margin: 2 }}>
-      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-        Search for a new location
-      </Typography>
-      <Box>
-        <APILoader apiKey={mapsApiKey} />
-        <PlacePicker
-          onPlaceChange={handlePlaceChange}
-          onRequestError={() => (error) => onRequestError(error)}
-        />
-      </Box>
-    </Box>
+    <Card sx={{ margin: 1, height: "150px", width: "350" }}>
+      <CardContent>
+        <Box sx={{ margin: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+            Search for a new location
+          </Typography>
+          <Box>
+            <APILoader apiKey={mapsApiKey} />
+            <PlacePicker
+              onPlaceChange={handlePlaceChange}
+              onRequestError={() => (error) => onRequestError(error)}
+            />
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
