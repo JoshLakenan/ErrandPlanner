@@ -12,7 +12,7 @@ export const getAllLocations = async () => {
 
 /**
  * Creates a new location or updates an existing location on the server.
- * @param {Object} location - { address: String, google_place_id: String, name: String }
+ * @param {Object} location - { address: String, googlePlaceId: String, name: String }
  * @returns {Promise<Object>} - A promise that resolves to the created or updated location.
  */
 export const createOrUpdateLocation = async (location) => {

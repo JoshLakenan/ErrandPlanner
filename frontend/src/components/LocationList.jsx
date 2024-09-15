@@ -5,15 +5,15 @@ import LocationCard from "./LocationCard";
  * LocationList component that displays a list of locations in a grid.
  * @param {Object} props - The component props
  * @param {Array} props.locations - The list of locations to display
- * @param {Function} props.onSaveLocation - The callback function to call when
+ * @param {Function} props.onSave - The callback function to call when
  * the user updates a location name
- * @param {Function} props.onDeleteLocation - The callback function to call
+ * @param {Function} props.onDelete - The callback function to call
  * when the user deletes a location
  * @returns {JSX.Element}
  */
-const LocationList = ({ locations, onSaveLocation, onDeleteLocation }) => {
+const LocationList = ({ locations, onSave, onDelete }) => {
   return (
-    <Box>
+    <>
       {locations.length === 0 ? (
         <Typography variant="h6" sx={{ margin: 2 }}>
           No locations added
@@ -24,14 +24,14 @@ const LocationList = ({ locations, onSaveLocation, onDeleteLocation }) => {
             <Grid item xs={12} key={location.id}>
               <LocationCard
                 location={location}
-                onSave={onSaveLocation}
-                onDelete={onDeleteLocation}
+                onSave={onSave}
+                onDelete={onDelete}
               />
             </Grid>
           ))}
         </Grid>
       )}
-    </Box>
+    </>
   );
 };
 

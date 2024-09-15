@@ -1,11 +1,6 @@
-import {
-  APILoader,
-  PlacePicker,
-} from "@googlemaps/extended-component-library/react";
+import { PlacePicker } from "@googlemaps/extended-component-library/react";
 
-import { Typography, Box, Card, CardContent } from "@mui/material";
-
-const mapsApiKey = import.meta.env.VITE_MAPS_API_KEY;
+import { Box } from "@mui/material";
 
 /**
  * GoogleLocationSearch component that allows users to search for a location
@@ -26,27 +21,20 @@ const GoogleLocationSearch = ({ onPlaceChange, onRequestError }) => {
    */
   const handlePlaceChange = (event) => {
     if (event.target.value) {
-      onPlaceChange(event.target.value);
+      const googlePlace = event.target.value;
+
+      onPlaceChange(googlePlace);
     }
   };
 
   return (
-    <Card sx={{ margin: 1, height: "150px", width: "350" }}>
-      <CardContent>
-        <Box sx={{ margin: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-            Search for a new location
-          </Typography>
-          <Box>
-            <APILoader apiKey={mapsApiKey} />
-            <PlacePicker
-              onPlaceChange={handlePlaceChange}
-              onRequestError={() => (error) => onRequestError(error)}
-            />
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
+    <Box>
+      <PlacePicker
+        country={["us", "ca"]} // Limit search to US and Canada
+        onPlaceChange={handlePlaceChange}
+        onRequestError={() => (error) => onRequestError(error)}
+      />
+    </Box>
   );
 };
 

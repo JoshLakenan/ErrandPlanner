@@ -27,7 +27,7 @@ const Navbar = ({ username = "josh" }) => {
   };
 
   return (
-    <AppBar position="static" sx={{ width: "100vw" }}>
+    <AppBar position="static" sx={{ width: "100vw", mb: 2 }}>
       <Toolbar id="toolbar">
         <Box
           sx={{

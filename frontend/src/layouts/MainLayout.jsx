@@ -5,11 +5,13 @@ const MainLayout = ({ children }) => {
   return (
     <Box
       sx={{
-        maxHeight: "90vH",
+        width: "100%",
+        flexGrow: 1,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
+        minHeight: "100vh",
       }}
     >
       <Navbar />

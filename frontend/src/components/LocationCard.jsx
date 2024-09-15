@@ -31,12 +31,7 @@ const LocationCard = ({ location, onSave, onDelete }) => {
 
   // Handle delete action
   const handleDelete = () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this location?\n" +
-          "It will be removed from all associated paths permanently."
-      )
-    ) {
+    if (!location) {
       return;
     }
     onDelete(location.id);
@@ -44,6 +39,9 @@ const LocationCard = ({ location, onSave, onDelete }) => {
 
   // Handle save action
   const handleSave = () => {
+    if (!location) {
+      return;
+    }
     if (!newName) {
       return;
     }
@@ -56,20 +54,29 @@ const LocationCard = ({ location, onSave, onDelete }) => {
   return (
     <Card sx={{ padding: 1 }}>
       <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mb: 1,
+            height: "50px",
+          }}
+        >
           <Box id={"address"} sx={{ width: 300 }}>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               Address
             </Typography>
 
-            <Typography variant="subtext1">{location.address}</Typography>
+            <Typography variant="subtext1">
+              {location?.address || ""}
+            </Typography>
           </Box>
 
           <Box id={"name"} sx={{ width: 150 }}>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               Name
             </Typography>
-            <Typography variant="subtext1">{location.name}</Typography>
+            <Typography variant="subtext1">{location?.name || ""}</Typography>
           </Box>
 
           <Box

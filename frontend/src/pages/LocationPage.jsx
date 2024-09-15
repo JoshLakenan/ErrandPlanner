@@ -1,4 +1,4 @@
-import { Alert } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   getAllLocations,
@@ -6,7 +6,7 @@ import {
   deleteLocation,
 } from "../services/locationService";
 import LocationList from "../components/LocationList";
-import GoogleLocationSearch from "../components/GoogleLocationSearch";
+import AddLocationCard from "../components/AddLocationCard";
 
 /**
  * LocationPage component fetches all locations from the backend and displays them
@@ -49,7 +49,7 @@ const LocationPage = () => {
     try {
       // Parse google Place object into a location object for the backend
       const location = {
-        google_place_id: googlePlace.id,
+        googlePlaceId: googlePlace.id,
         address: googlePlace.formattedAddress,
       };
 
@@ -87,6 +87,14 @@ const LocationPage = () => {
   };
 
   const handleDeleteLocation = async (locationId) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this location? \n" +
+          "It will be removed from all associated paths permanently."
+      )
+    ) {
+      return;
+    }
     try {
       // Delete the location from the backend
       deleteLocation(locationId);
@@ -102,18 +110,20 @@ const LocationPage = () => {
 
   return (
     <>
-      <GoogleLocationSearch
+      <AddLocationCard
         onPlaceChange={handleCreateLocation}
         onRequestError={handleRequestError}
       />
       {error ? (
         <Alert severity="error">{error}</Alert>
       ) : (
-        <LocationList
-          locations={locations}
-          onSaveLocation={handleUpdateLocation}
-          onDeleteLocation={handleDeleteLocation}
-        />
+        <Box sx={{ width: "70%" }}>
+          <LocationList
+            locations={locations}
+            onSave={handleUpdateLocation}
+            onDelete={handleDeleteLocation}
+          />
+        </Box>
       )}
     </>
   );
