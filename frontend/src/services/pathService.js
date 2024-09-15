@@ -66,7 +66,6 @@ export const getPathLocations = async (pathId) => {
  * @returns {Promise<Object>} - A promise that resolves to the updated path.
  */
 export const addLocationToPath = async (pathId, location) => {
-  console.log("location in service: ", location);
   const response = await apiClient.post(`/paths/${pathId}/locations`, location);
 
   return response.data;

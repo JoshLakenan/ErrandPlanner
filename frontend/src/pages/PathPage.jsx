@@ -3,6 +3,7 @@ import { getAllPaths, createPath } from "../services/pathService";
 import { Alert } from "@mui/material";
 import AddPath from "../components/AddPath";
 import PathGrid from "../components/PathGrid";
+import { Box, Typography } from "@mui/material";
 
 /**
  * PathPage component fetches all paths from the backend and displays them in
@@ -60,6 +61,11 @@ const PathPage = () => {
 
       {/* Error Alert */}
       {error && <Alert severity="error">{error}</Alert>}
+      {paths.length > 0 && (
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Saved Paths
+        </Typography>
+      )}
 
       <PathGrid paths={paths} />
     </>

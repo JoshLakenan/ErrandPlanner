@@ -33,6 +33,17 @@ import {
   calculatePath,
 } from "../services/pathService";
 
+const halfStyle = {
+  width: "50%",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  "& > *": {
+    margin: 1,
+  },
+};
+
 const PathDetailPage = () => {
   //Get the state passed from the previous page
   const location = useLocation();
@@ -82,6 +93,9 @@ const PathDetailPage = () => {
     }
   };
 
+  /**
+   * Calculate the optimal path for the path in the backend and update the state.
+   */
   const handleCalculatePath = async () => {
     try {
       // Calculate the path in the backend
@@ -95,17 +109,31 @@ const PathDetailPage = () => {
       setError(error.response?.data?.message || "Failed to calculate path");
     }
   };
-  // Path Meta Functions
-  const handleNewNameChange = (event) => {
+
+  /**
+   * Update the new name state when the input changes.
+   * @param {Event} event - The input change event.
+   * @returns {void}
+   */
+  const handlePathNameInputChange = (event) => {
     setNewName(event.target.value);
   };
 
+  /**
+   * Display a temporary alert message for 2 seconds.
+   * @param {String} alertMessage - The message to display in the alert.
+   * @returns {void}
+   */
   const handleTemporaryAlert = (alertMessage) => {
     setAlert(alertMessage);
     setTimeout(() => {
       setAlert(null);
     }, 2000);
   };
+
+  /**
+   * Update the path name in the backend and update the state to reflect the change.
+   */
   const handleSaveNewPathName = async () => {
     try {
       // Update the path name in the backend
@@ -179,7 +207,6 @@ const PathDetailPage = () => {
     let formattedNewLocation = null;
 
     if (source === "new") {
-      console.log(newSearchedLocation);
       formattedNewLocation = {
         address: newSearchedLocation.formattedAddress,
         googlePlaceId: newSearchedLocation.id,
@@ -237,6 +264,12 @@ const PathDetailPage = () => {
     setWaypoints(waypoints);
   };
 
+  /**
+   * Remove the location from the path in the backend and update the state to reflect the change.
+   * @param {String} position - The position of the location to remove.
+   * @param {String} locationId - The id of the location to remove.
+   * @returns {void}
+   */
   const handleRemoveLocationFromPath = async (position, locationId) => {
     try {
       // Format the location object to include the position
@@ -255,7 +288,12 @@ const PathDetailPage = () => {
     }
   };
 
-  const handleUpdateLocation = async (position, location) => {
+  /**
+   * Update the location in the backend and update the state to reflect the change.
+   * @param {Object} location - The location object to update.
+   * @returns {void}
+   */
+  const handleUpdateLocation = async (location) => {
     try {
       // Update the location in the backend
       const renamedLocation = await createOrUpdateLocation(location);
@@ -299,7 +337,6 @@ const PathDetailPage = () => {
     if (error) {
       const timer = setTimeout(() => {
         setError(null);
-        console.log("Error cleared after 5 seconds");
       }, 5000);
 
       // Cleanup the timer when the component unmounts or error changes
@@ -307,6 +344,7 @@ const PathDetailPage = () => {
     }
   }, [error]);
 
+  // Update the ordered location state when the path changes
   useEffect(() => {
     if (path) {
       updateOrderedLocationState(path.locations);
@@ -321,84 +359,61 @@ const PathDetailPage = () => {
 
   return (
     <>
+      {/* Page */}
       <Box sx={{ width: "80%" }}>
         {/* Meta Info / Controls */}
         <Card sx={{ mb: 1 }}>
           <CardContent
-            sx={{ display: "flex", justifyContent: "space-between" }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-evenly",
+            }}
           >
-            {/* Left Side - Path Info */}
+            {/* Left side * Info / Edit */}
             <Box
               sx={{
-                width: "300px",
+                width: "30%",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                "& > *": {
+                  margin: 1,
+                },
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+              {/* Path Info*/}
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 Path Info
               </Typography>
 
-              <PathCardContent path={path} />
-            </Box>
-
-            {/* Middle - Calculate Path */}
-            <Box
-              sx={{
-                width: 300,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-                Calculate Path
-              </Typography>
-              {error && <Alert severity="error">{error}</Alert>}
-              {alert && <Alert severity="success">{alert}</Alert>}
-
-              <Button
-                onClick={handleCalculatePath}
-                variant="contained"
-                color="secondary"
-                size="small"
-                startIcon={<MapIcon />} // Adding the Map icon here
+              <Box
                 sx={{
-                  fontSize: "1.2rem", // Adjust the font size if needed
-                  // padding: "12px 24px",
-                  width: "250px",
+                  width: "100%",
+                  border: "1px solid",
+                  borderColor: "grey.400",
+                  borderRadius: "4px",
+                  padding: "8px 16px",
                 }}
               >
-                Calculate
-              </Button>
-            </Box>
+                <PathCardContent path={path} />
+              </Box>
 
-            {/* Right - Edit */}
-            <Box
-              sx={{
-                width: 325,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-                Edit Path
-              </Typography>
-
+              {/* Edit Controls */}
               <Box
                 id="editControls"
                 sx={{
+                  width: "100%",
                   display: "flex",
                   justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
                 <TextField
+                  sx={{ mr: 2 }}
                   label="Update Name"
                   value={newName}
-                  onChange={handleNewNameChange}
+                  onChange={handlePathNameInputChange}
                   variant="outlined"
                   size="small"
                 />
@@ -407,6 +422,7 @@ const PathDetailPage = () => {
                   color="primary"
                   size="small"
                   onClick={handleSaveNewPathName}
+                  sx={{ width: "40px", height: "40px" }}
                 >
                   Save
                 </Button>
@@ -414,110 +430,162 @@ const PathDetailPage = () => {
                 <IconButton
                   aria-label="delete"
                   color="secondary"
-                  size="small"
+                  size="medium"
                   onClick={handleDeletePath}
                 >
                   <DeleteIcon />
                 </IconButton>
               </Box>
+
+              {/* Calculate Path Button */}
+              <Button
+                onClick={handleCalculatePath}
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<MapIcon />}
+                sx={{
+                  mt: 1,
+                  fontSize: "1rem",
+                  width: "275px",
+                }}
+              >
+                Calculate Path
+              </Button>
+            </Box>
+
+            {/*Right Side * Add Location */}
+            <Box
+              sx={{
+                width: "45%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                "& > *": {
+                  margin: 1,
+                },
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Select A Location To Add to Path
+              </Typography>
+
+              {/* Select Dropdowns */}
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                }}
+              >
+                <DropdownSelect
+                  label="Select Position"
+                  items={[
+                    { value: "origin", label: "Start" },
+                    { value: "destination", label: "End" },
+                    { value: "waypoint", label: "Errand" },
+                  ]}
+                  onValueChange={setNewLocPosition}
+                  size={{ width: "200px", mr: 2 }}
+                  defaultValue={"origin"}
+                />
+                <DropdownSelect
+                  label="Location Source"
+                  items={[
+                    { value: "new", label: "Search For Location" },
+                    {
+                      value: "recent",
+                      label: "Select Recent Location",
+                    },
+                  ]}
+                  onValueChange={setSource}
+                  size={{ width: "220px", mr: 2 }}
+                  defaultValue={"new"}
+                />
+              </Box>
+
+              {/* Location Search / Select */}
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  margin: 2,
+                }}
+              >
+                {source === "new" ? (
+                  // Google Search Box
+                  <Box sx={{ width: "220px", m: 2 }}>
+                    <GoogleLocationSearch
+                      onPlaceChange={setNewSearchedLocation}
+                      onRequestError={() =>
+                        setError("Google Places API request failed")
+                      }
+                    />
+                  </Box>
+                ) : (
+                  // Recent Location Dropdown
+                  <DropdownSelect
+                    label="Select Recent Location"
+                    items={locations.map((loc) => ({
+                      value: loc.id,
+                      label: loc.name || loc.address,
+                    }))}
+                    onValueChange={setExistingLocationId}
+                    size={{ width: "220px", mr: 2 }}
+                  />
+                )}
+
+                {/* Add Location Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  onClick={handleAddLocationToPath}
+                  sx={{ width: "40px", height: "40px", mr: 2 }}
+                >
+                  Add
+                </Button>
+              </Box>
+              {error && <Alert severity="error">{error}</Alert>}
+              {alert && <Alert severity="success">{alert}</Alert>}
             </Box>
           </CardContent>
         </Card>
 
-        {/* Add Location */}
-
-        <Card>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Select A Location To Add to Path
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              margin: 2,
-            }}
-          >
-            <DropdownSelect
-              label="Select Position"
-              items={[
-                { value: "origin", label: "Start" },
-                { value: "destination", label: "End" },
-                { value: "waypoint", label: "Errand" },
-              ]}
-              onValueChange={setNewLocPosition}
-              size={{ width: "200px", mr: 2 }}
-              defaultValue={"origin"}
-            />
-            <DropdownSelect
-              label="Location Source"
-              items={[
-                { value: "new", label: "Search For Location" },
-                {
-                  value: "recent",
-                  label: "Select Recent Location",
-                },
-              ]}
-              onValueChange={setSource}
-              size={{ width: "220px", mr: 2 }}
-              defaultValue={"new"}
-            />
-
-            {/* Location Search / Select */}
-            {source === "new" ? (
-              <Box sx={{ width: "220px" }}>
-                <GoogleLocationSearch
-                  onPlaceChange={setNewSearchedLocation}
-                  onRequestError={() =>
-                    setError("Google Places API request failed")
-                  }
-                />
-              </Box>
-            ) : (
-              <DropdownSelect
-                label="Select Recent Location"
-                items={locations.map((loc) => ({
-                  value: loc.id,
-                  label: loc.name || loc.address,
-                }))}
-                onValueChange={setExistingLocationId}
-                size={{ width: "220px", mr: 2 }}
-              />
-            )}
-
-            {/* Add Location Button */}
-            <Button
-              variant="contained"
-              color="primary"
-              size="medium"
-              onClick={handleAddLocationToPath}
-            >
-              Add Location To Path
-            </Button>
-          </Box>
-        </Card>
-
-        {/* Locations */}
+        {/* Path Locations */}
         <Box>
-          <Typography variant="h6">Start Location</Typography>
+          {/* Start */}
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Start Location
+          </Typography>
           <LocationCard
             location={origin}
-            onSave={handleUpdateLocation.bind(null, "origin")}
+            onSave={handleUpdateLocation}
             onDelete={handleRemoveLocationFromPath.bind(null, "origin")}
           />
 
-          <Typography variant="h6">Errands</Typography>
-          <LocationList
-            locations={waypoints}
-            onSave={handleUpdateLocation.bind(null, "waypoint")}
-            onDelete={handleRemoveLocationFromPath.bind(null, "waypoint")}
-          />
-
-          <Typography variant="h6">End Location</Typography>
+          {/* End */}
+          <Typography variant="h6" sx={{ fontWeight: "bold", m: 1 }}>
+            End Location
+          </Typography>
           <LocationCard
             location={destination}
-            onSave={handleUpdateLocation.bind(null, "destination")}
+            onSave={handleUpdateLocation}
             onDelete={handleRemoveLocationFromPath.bind(null, "destination")}
+          />
+
+          {/* Errands */}
+          <Typography variant="h6" sx={{ fontWeight: "bold", m: 1 }}>
+            Errands
+          </Typography>
+          <LocationList
+            locations={waypoints}
+            onSave={handleUpdateLocation}
+            onDelete={handleRemoveLocationFromPath.bind(null, "waypoint")}
           />
         </Box>
       </Box>

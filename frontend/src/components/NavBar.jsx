@@ -12,7 +12,7 @@ const navLinkStyle = {
   },
 };
 
-const Navbar = ({ username = "josh" }) => {
+const Navbar = ({ username = "" }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -32,7 +32,7 @@ const Navbar = ({ username = "josh" }) => {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "space-evenly",
             width: "100%",
           }}
         >

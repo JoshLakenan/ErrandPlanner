@@ -1,4 +1,4 @@
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   getAllLocations,
@@ -37,7 +37,6 @@ const LocationPage = () => {
     if (error) {
       const timer = setTimeout(() => {
         setError(null);
-        console.log("Error cleared after 5 seconds");
       }, 5000);
 
       // Cleanup the timer when the component unmounts or error changes
@@ -118,6 +117,11 @@ const LocationPage = () => {
         <Alert severity="error">{error}</Alert>
       ) : (
         <Box sx={{ width: "70%" }}>
+          {locations.length > 0 && (
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Saved Locations
+            </Typography>
+          )}
           <LocationList
             locations={locations}
             onSave={handleUpdateLocation}

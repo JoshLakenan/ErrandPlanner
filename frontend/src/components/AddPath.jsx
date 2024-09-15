@@ -43,7 +43,7 @@ const AddPath = ({ onAdd, setError }) => {
 
   return (
     <>
-      <Card sx={{ mb: 1, height: "150px", width: "350" }}>
+      <Card sx={{ mb: 2, height: "150px", width: "350" }}>
         <CardContent>
           <Box
             id="addPath"

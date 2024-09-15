@@ -21,14 +21,12 @@ export const loginUser = async (username, password) => {
 };
 
 /**
- * Checks if the client has a valid JWT token, and redirects to the login page
- * if the token is missing or invalid.
+ * Checks if the client has a valid JWT token, and returns it if it is valid,
+ * or returns false if it is not.
  * @param {void}
- * @returns {void}
+ * @returns {object|null} - Decoded jwt token if valid, null if not
  */
 export const clientAuthCheck = () => {
-  const navigate = useNavigate();
-
   // Get the JWT token from session storage
   const token = sessionStorage.getItem("jwt");
 
@@ -38,7 +36,7 @@ export const clientAuthCheck = () => {
     valid = false;
   }
 
-  // Check if token is valid
+  // Check if token is expired
   const decodedToken = jwtDecode(token);
   const currentTime = Date.now() / 1000;
   if (decodedToken.exp < currentTime) {
@@ -48,12 +46,7 @@ export const clientAuthCheck = () => {
   // If token is not valid, remove it from session storage and redirect to login
   if (!valid) {
     sessionStorage.removeItem("jwt");
-    navigate("/login", {
-      replace: true,
-      state: {
-        alert: "Please log in to continue.",
-        type: "error",
-      },
-    });
   }
+
+  return valid ? decodedToken : null;
 };
