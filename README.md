@@ -81,8 +81,28 @@ path.
 ### Setup Notes
 - The current docker-compose.yml file sets up docker volumes for postgres
   data and redis data on your device. This enables the perstistance of data
-  across container restarts. 
+  across container restarts.
 
+## Tech Stack
+For detailed info on the implementation of various project components, structure,
+  and dependencies, view the repo's closed [pull requests](https://github.com/JoshLakenan/ErrandPlanner/pulls?q=is%3Apr+is%3Aclosed) 
+#### Backend
+- Node.js Express.js, Sequelize, JWT authentication
+#### Frontend
+- React.js, Vite
+#### Database
+- PostgreSQL
+#### Caching
+- Redis
+#### External APIs
+- Frontend: Google Maps Platform's [Places Api](https://developers.google.com/maps/documentation/places/web-service/overview)
+    - Used for Google place search with auto complete via google's [Extended component library](https://github.com/googlemaps/extended-component-library)
+- Backend: Google Maps Platform's [Routes Api](https://developers.google.com/maps/documentation/routes)
+    - Used when hitting the `api/v1/routes/:routeId/calculate` endpoint with a `PATCH`
+      request to calculate a google directions link with the path's waypoints
+      ( Errand locations ) organized into the most efficient path.
+
+      
 ## Using the App
 1. Navigate to the `http://localhost:8080`, to begin planning your your
     optimized errand routes!
@@ -113,11 +133,21 @@ To run the current tests, follow these steps.
 ## Future Work
 1. More tests are needed, especially for the more complex services that handle interacting with the Google Routes API and adding and removing locations from paths. I haven't yet had time to ensure that the functionality is robust for future use and development.
 
-2. I plan to build out full documentation of the backend API.
+2. Build out full documentation of the backend API routes, methods, expected request bodies, and query strings, along with expected return values and possible errors.
 
 3. I'd love to further integrate with Google's Places and Maps APIs to generate a visual representation of each path on a map and pull in images and other details from Google about each location.
 
 4. Customization options for metric or standard distances, avoiding tolls, and many other settings associated with interacting with the Google Routes API would help make the app even more useful.
+
+5. Add search functionality and pagination for user's paths and locations. Currently the application retrieves all paths and locations in descending order by creation / last updated times,
+   but over time this would lead to excessive data fetching, slow frontend load times, and a poor user experience.
+
+7. Implement XSS proection through [helmet](https://www.npmjs.com/package/helmet) or a similar robust security middleware.
+
+8. Refactor the database models to have a unique constraint on the `name` column for both Paths and Locations.
+
+9. Refactor frontend components to use custom hooks to cleanly group functionality associated with each component / page as appropriate,
+   and break large pages such as the `PathDetailPage.jsx` into many smaller components for ease of continued development and maintenance.
 
 
 
