@@ -13,6 +13,14 @@ import PathLocation from "../models/pathLocation.js";
  * @returns {Promise<void>}
  */
 const initDBService = async () => {
+  // Test the connection
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    throw new Error("Unable to connect to the database:", error);
+  }
+
   // Define One to Many relationship between User and Path
   User.hasMany(Path, { foreignKey: "user_id" });
   Path.belongsTo(User, { foreignKey: "user_id" });
