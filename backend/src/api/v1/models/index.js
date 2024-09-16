@@ -12,12 +12,12 @@ const sequelize = new Sequelize(
   }
 );
 
-// Test the connection
-try {
-  await sequelize.authenticate();
-  console.log("Connection has been established successfully.");
-} catch (error) {
-  throw new Error("Unable to connect to the database:", error);
-}
+// // Test the connection
+// try {
+//   await sequelize.authenticate();
+//   console.log("Connection has been established successfully.");
+// } catch (error) {
+//   throw new Error("Unable to connect to the database:", error);
+// }
 
 export default sequelize;
