@@ -39,6 +39,9 @@ const AddPath = ({ onAdd, setError }) => {
     const newPath = { name: newPathName };
 
     onAdd(newPath);
+
+    // Clear the input after adding the new path
+    setNewPathName("");
   };
 
   return (

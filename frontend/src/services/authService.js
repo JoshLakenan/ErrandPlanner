@@ -1,6 +1,5 @@
 import apiClient from "./backendApiClient";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 export const registerUser = async (username, password) => {
   const response = await apiClient.post("/users", {
@@ -34,6 +33,7 @@ export const clientAuthCheck = () => {
   let valid = true;
   if (!token) {
     valid = false;
+    return null;
   }
 
   // Check if token is expired

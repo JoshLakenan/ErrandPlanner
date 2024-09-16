@@ -5,19 +5,23 @@ import { useNavigate } from "react-router-dom";
 import { clientAuthCheck } from "../services/authService.js";
 
 const MainLayout = ({ children }) => {
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const user = clientAuthCheck();
 
+    // Redirect to login page if user is not logged in
     if (!user) {
       navigate("/login", {
         replace: true,
         state: { alert: { message: "Please login", type: "info" } },
       });
+      return;
     }
-    setUserName(user.username);
+
+    // Set the username in the state
+    setUsername(user.username);
   }, []);
 
   return (
@@ -32,7 +36,7 @@ const MainLayout = ({ children }) => {
         minHeight: "100vh",
       }}
     >
-      <Navbar username={userName} />
+      <Navbar username={username} />
       {children}
     </Box>
   );

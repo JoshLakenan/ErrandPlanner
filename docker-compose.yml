@@ -30,7 +30,7 @@ services:
       DB_NAME: ${POSTGRES_DB}
       DB_PORT: ${POSTGRES_PORT}
       BACKEND_PORT: ${BACKEND_PORT}
-      FRONTEND_PORT: ${FRONTEND_PORT}
+      CORS_ORIGINS: ${CORS_ORIGINS}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
@@ -48,6 +48,17 @@ services:
         "-c",
         "/app/wait-for-it.sh postgres:${POSTGRES_PORT} -- /app/wait-for-it.sh redis:${REDIS_PORT} -- npm start",
       ]
+
+  frontend:
+    build:
+      dockerfile: ./frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "${VITE_FRONTEND_PORT}:80" # Caddy listens on port 80 inside the container
+    depends_on:
+      - backend
+      - postgres
+      - redis
 
 # Ensures that the volumes persist data across container restarts
 volumes:
