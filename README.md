@@ -7,7 +7,7 @@ your travel time? Not sure what traffic will be like, and what the quickest
 way to visit each location will be? Create a path in the Errand Planner app, 
 add your start, end, and errand locations, and click "Calculate Path" to 
 generate a Google Maps directions link that will take you along the optimal
-path. Something you can't do in Google Maps on it's own!
+path.
 
 ## Setup
 ### Requirements
@@ -23,9 +23,9 @@ path. Something you can't do in Google Maps on it's own!
 3. Create a .env within the cloned `ErrandPlanner` root directory that provides 
    the following environment variables, including the google maps API key 
    mentioned in step 2.
-    - The .env file is used to configure the following information the ports
-    and database credentials, but is also used to customize the following
-    functional/ performance / security settings in the app:
+    - The .env file is used to configure ports and database credentials, but is 
+    also used to customize the following functional/ performance / security 
+    settings in the app:
       - `JWT_EXPIRES_IN` - This value sets the expiration time for the JSON
       web tokens issued by the backend. 
       - `CORS_ORIGINS` - This value should be set to a comma seperated list
@@ -44,7 +44,6 @@ path. Something you can't do in Google Maps on it's own!
       minimum possible "permissions" to limit the risk associated with either.
       The `VITE_GOOGLE_MAPS_API_KEY` value will be discoverable in the frontend,
       so [restricting the key](https://developers.google.com/maps/api-security-best-practices) of the key to a specific frontend domain is crucial.
-
 
     - the example below has sensible defaults set. All you *NEED* to replace is
       the google maps API key 
@@ -79,32 +78,29 @@ path. Something you can't do in Google Maps on it's own!
      - Use `docker compose start` to restart the containers.
      - Use `docker compose stop` to stop the containers.
 
-  5. Navigate to the `http://localhost:8080`, to begin planning your your
-     optimized errand routes!
-
 ### Setup Notes
-- The current docker-compose.yml file sets up persistant storage of postgres
+- The current docker-compose.yml file sets up docker volumes for postgres
   data and redis data on your device. This enables the perstistance of data
   across container restarts. 
 
 ## Using the App
-1. Register as a user! 
-    - You'll be re-directed to login afterward.
-2. Login. 
-    - Upon successful login you'll be taken to the /paths page.
-3. Create a path
+1. Navigate to the `http://localhost:8080`, to begin planning your your
+    optimized errand routes!
+2. Register as a user
+3. Login
+4. Create a path
     - The paths page is used to create and view your "paths" aka lists of
   locations. Click on a path card to view it's details.
-4. Add locations to your path, and get an optimized google directions link
+5. Add locations to your path, and get an optimized google directions link
     - On the path detail page, you can add locations to your path via google
   places search, or by selecting from recently used / saved paths. 
     - Add paths using the controls on the right hand side.
     - Click the big purple button to calculate your path! This gets a google
     directions with all errand locations organized into the most optimal 
     order, along with the drive time / distance data for your selected locations.
-5. Save / Edit locations
+6. Save / Edit locations
     - You can save names for your favorite locations from the path detail page, 
-    or the /locations page. 
+    or the locations page. 
     - Deleting a saved location from the locations page will also remove it from
     any associated paths.
 
@@ -115,17 +111,13 @@ To run the current tests, follow these steps.
 3. Run the `npm run test` command. 
 
 ## Future Work
-1. More tests are needed, especially for the more complex services that handle
-interacting with the Google Routes api, and adding and removing locations from
-paths. I haven't yet had time to do this justice, to ensure that the functionality
-is robust for future use and development.
+1. More tests are needed, especially for the more complex services that handle interacting with the Google Routes API and adding and removing locations from paths. I haven't yet had time to ensure that the functionality is robust for future use and development.
 
 2. I plan to build out full documentation of the backend API.
 
-3. I'd love to further integrate with Google's Places and Maps apis to generate
-a visual representation of each path on a map, and pull in images and other 
-details from Google about each location.
+3. I'd love to further integrate with Google's Places and Maps APIs to generate a visual representation of each path on a map and pull in images and other details from Google about each location.
 
-4. Customization options for metric or standard distances, avoiding tolls, and
-many other settings, assiated with interacting with the Google Routes API, would
-help make the app even more useful.
+4. Customization options for metric or standard distances, avoiding tolls, and many other settings associated with interacting with the Google Routes API would help make the app even more useful.
+
+
+
