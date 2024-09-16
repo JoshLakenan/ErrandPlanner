@@ -55,8 +55,20 @@ const LocationPage = () => {
       // Create the location in the backend
       const newLocation = await createOrUpdateLocation(location);
 
-      // Update the state to add the new location
-      setLocations((prev) => [newLocation, ...prev]);
+      // Update the state by checking to see if the location already exists,
+      // if it does, update the location, otherwise add the new location
+      setLocations((prev) => {
+        const locationExists = prev.find(
+          (loc) => loc.googlePlaceId === newLocation.googlePlaceId
+        );
+        return locationExists
+          ? prev.map((loc) =>
+              loc.googlePlaceId === newLocation.googlePlaceId
+                ? newLocation
+                : loc
+            )
+          : [newLocation, ...prev];
+      });
     } catch (error) {
       console.error(error);
       setError(error.response?.data?.message || "Failed to create location");

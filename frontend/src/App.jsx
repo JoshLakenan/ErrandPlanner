@@ -6,7 +6,7 @@ import PathDetailPage from "./pages/PathDetailPage.jsx";
 import LocationPage from "./pages/LocationPage.jsx";
 import "./App.css";
 import { APILoader } from "@googlemaps/extended-component-library/react";
-const mapsApiKey = import.meta.env.VITE_MAPS_API_KEY;
+const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 import {
   BrowserRouter as Router,
   Route,
