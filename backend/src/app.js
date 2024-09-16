@@ -19,13 +19,15 @@ app.use(express.json());
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like curl or Postman) or in the CORS_ORIGINS list
-    if (!origin || process.env.CORS_ORIGINS.split(",").includes(origin)) {
+    // Allow only requests from the environments specified in the CORS_ORIGINS
+    //environment variable
+    if (process.env.CORS_ORIGINS.split(",").includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  // Ensure that the Access-Control-Allow-Credentials header is set to true
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
