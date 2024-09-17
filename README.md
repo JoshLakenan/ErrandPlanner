@@ -10,6 +10,7 @@ generate a Google Maps directions link that will take you along the optimal
 path.
 
 ## Setup
+### [Setup / Demo video](https://youtu.be/V9zJLKL2KnY)
 ### Requirements
 - Docker
 - git / github
