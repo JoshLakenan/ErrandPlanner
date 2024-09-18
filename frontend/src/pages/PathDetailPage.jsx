@@ -19,6 +19,8 @@ import MapIcon from "@mui/icons-material/Map";
 import GoogleLocationSearch from "../components/GoogleLocationSearch";
 import DropdownSelect from "../components/DropDownSelect";
 
+import useTemporaryValue from "../hooks/useTemporaryValue";
+
 import {
   getAllLocations,
   createOrUpdateLocation,
@@ -53,8 +55,8 @@ const PathDetailPage = () => {
   // Path Meta State
   const [path, setPath] = useState(null);
   const [newName, setNewName] = useState("");
-  const [error, setError] = useState(null);
-  const [alert, setAlert] = useState();
+  const [error, setError] = useTemporaryValue(null, 5000);
+  const [alert, setAlert] = useTemporaryValue(null, 3000);
 
   // Path Location State
   const [waypoints, setWaypoints] = useState([]);
@@ -101,9 +103,8 @@ const PathDetailPage = () => {
       // Calculate the path in the backend
       const calculatedPath = await calculatePath(pathId);
       setPath(calculatedPath);
-      handleTemporaryAlert(
-        "Optimal Path calculated successfully! Path info updated."
-      );
+
+      setAlert("Optimal Path calculated successfully! Path info updated.");
     } catch (error) {
       console.error(error);
       setError(error.response?.data?.message || "Failed to calculate path");
@@ -120,18 +121,6 @@ const PathDetailPage = () => {
   };
 
   /**
-   * Display a temporary alert message for 2 seconds.
-   * @param {String} alertMessage - The message to display in the alert.
-   * @returns {void}
-   */
-  const handleTemporaryAlert = (alertMessage) => {
-    setAlert(alertMessage);
-    setTimeout(() => {
-      setAlert(null);
-    }, 2000);
-  };
-
-  /**
    * Update the path name in the backend and update the state to reflect the change.
    */
   const handleSaveNewPathName = async () => {
@@ -143,7 +132,7 @@ const PathDetailPage = () => {
       setPath((prev) => ({ ...prev, name: updatedPath.name }));
 
       // Alert that the operation was successful, and clear the input
-      handleTemporaryAlert("Path name updated successfully");
+      setAlert("Path name updated successfully");
       setNewName("");
     } catch (error) {
       console.error(error);
@@ -238,7 +227,7 @@ const PathDetailPage = () => {
 
       setPath(updatedPath);
 
-      handleTemporaryAlert("Location added to path");
+      setAlert("Location added to path");
     } catch (error) {
       console.error(error);
       setError(
@@ -279,7 +268,7 @@ const PathDetailPage = () => {
       const updatedPath = await removeLocationFromPath(pathId, locationDetails);
 
       setPath(updatedPath);
-      handleTemporaryAlert("Location removed from path");
+      setAlert("Location removed from path");
     } catch (error) {
       console.error(error);
       setError(
@@ -319,7 +308,7 @@ const PathDetailPage = () => {
         return updatedLocations;
       });
 
-      handleTemporaryAlert("Location updated successfully");
+      setAlert("Location updated successfully");
     } catch (error) {
       console.error(error);
       setError(error.response?.data?.message || "Failed to update location");
@@ -330,18 +319,6 @@ const PathDetailPage = () => {
   useEffect(() => {
     fetchPathLocations();
     fetchAllLocations();
-  }, [error]);
-
-  // Clear the error after 5 seconds when it's set
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 5000);
-
-      // Cleanup the timer when the component unmounts or error changes
-      return () => clearTimeout(timer);
-    }
   }, [error]);
 
   // Update the ordered location state when the path changes

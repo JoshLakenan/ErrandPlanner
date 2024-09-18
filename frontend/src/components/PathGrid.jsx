@@ -12,16 +12,22 @@ const PathGrid = ({ paths }) => {
     <Box sx={{ width: "100%" }}>
       {paths.length === 0 ? (
         <Typography variant="h6" sx={{ margin: 2 }}>
-          No paths added
+          No paths found
         </Typography>
       ) : (
-        <Grid container spacing={2}>
-          {paths.map((path) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={path.id}>
-              <PathCard path={path} />
-            </Grid>
-          ))}
-        </Grid>
+        <>
+          <Typography variant="h6" sx={{ margin: 2 }}>
+            Saved Paths
+          </Typography>
+
+          <Grid container spacing={2}>
+            {paths.map((path) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={path.id}>
+                <PathCard path={path} />
+              </Grid>
+            ))}
+          </Grid>
+        </>
       )}
     </Box>
   );

@@ -4,6 +4,7 @@ import { Alert } from "@mui/material";
 import AddPath from "../components/AddPath";
 import PathGrid from "../components/PathGrid";
 import { Box, Typography } from "@mui/material";
+import useTemporaryValue from "../hooks/useTemporaryValue";
 
 /**
  * PathPage component fetches all paths from the backend and displays them in
@@ -12,7 +13,8 @@ import { Box, Typography } from "@mui/material";
  */
 const PathPage = () => {
   const [paths, setPaths] = useState([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useTemporaryValue(null, 5000);
+  const [alert, setAlert] = useTemporaryValue(null, 3000);
 
   // Fetch all paths on mount
   useEffect(() => {
@@ -29,19 +31,6 @@ const PathPage = () => {
     fetchPaths();
   }, [error]);
 
-  // Clear the error after 5 seconds when it's set
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-        console.log("Error cleared after 5 seconds");
-      }, 5000);
-
-      // Cleanup the timer when the component unmounts or error changes
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   const handleAddPath = async (path) => {
     try {
       // Send reqeust to backend to create a new path
@@ -49,6 +38,9 @@ const PathPage = () => {
 
       // Update the paths state with the new path
       setPaths((prev) => [newPath, ...prev]);
+
+      // Set the alert message
+      setAlert("Path created successfully");
     } catch (error) {
       console.error(error);
       setError(error.response?.data?.message || "Failed to create path");
@@ -61,11 +53,7 @@ const PathPage = () => {
 
       {/* Error Alert */}
       {error && <Alert severity="error">{error}</Alert>}
-      {paths.length > 0 && (
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Saved Paths
-        </Typography>
-      )}
+      {alert && <Alert severity="success">{alert}</Alert>}
 
       <PathGrid paths={paths} />
     </>
