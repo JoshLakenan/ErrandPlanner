@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
-import { getAllPaths, createPath } from "../services/pathService";
 import { Alert } from "@mui/material";
 import AddPath from "../components/AddPath";
 import PathGrid from "../components/PathGrid";
-import { Box, Typography } from "@mui/material";
-import useTemporaryValue from "../hooks/useTemporaryValue";
+import usePaths from "../hooks/usePaths";
 
 /**
  * PathPage component fetches all paths from the backend and displays them in
@@ -12,40 +9,7 @@ import useTemporaryValue from "../hooks/useTemporaryValue";
  * @returns {JSX.Element}
  */
 const PathPage = () => {
-  const [paths, setPaths] = useState([]);
-  const [error, setError] = useTemporaryValue(null, 5000);
-  const [alert, setAlert] = useTemporaryValue(null, 3000);
-
-  // Fetch all paths on mount
-  useEffect(() => {
-    const fetchPaths = async () => {
-      try {
-        const paths = await getAllPaths();
-        setPaths(paths);
-      } catch (error) {
-        console.error(error);
-        setError(error.response?.data?.message || "Failed to fetch paths");
-      }
-    };
-
-    fetchPaths();
-  }, [error]);
-
-  const handleAddPath = async (path) => {
-    try {
-      // Send reqeust to backend to create a new path
-      const newPath = await createPath(path);
-
-      // Update the paths state with the new path
-      setPaths((prev) => [newPath, ...prev]);
-
-      // Set the alert message
-      setAlert("Path created successfully");
-    } catch (error) {
-      console.error(error);
-      setError(error.response?.data?.message || "Failed to create path");
-    }
-  };
+  const { paths, error, setError, alert, setAlert, handleAddPath } = usePaths();
 
   return (
     <>
