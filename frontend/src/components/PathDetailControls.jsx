@@ -23,8 +23,6 @@ const PathDetailControls = ({
   onSaveNewPathName,
   onDeletePath,
   onCalculatePath,
-  alert,
-  error,
 }) => {
   return (
     <Box
