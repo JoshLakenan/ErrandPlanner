@@ -5,3 +5,4 @@
 /frontend/dist
 /backend/node_modules
 /backend/.env
+.DS_Store
