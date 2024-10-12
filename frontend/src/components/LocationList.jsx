@@ -16,20 +16,26 @@ const LocationList = ({ locations, onSave, onDelete }) => {
     <>
       {locations.length === 0 ? (
         <Typography variant="h6" sx={{ margin: 2 }}>
-          No locations added
+          No locations found
         </Typography>
       ) : (
-        <Grid container spacing={1}>
-          {locations.map((location) => (
-            <Grid item xs={12} key={location.id}>
-              <LocationCard
-                location={location}
-                onSave={onSave}
-                onDelete={onDelete}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <>
+          <Typography variant="h6" sx={{ margin: 2 }}>
+            Saved Locations
+          </Typography>
+
+          <Grid container spacing={1}>
+            {locations.map((location) => (
+              <Grid item xs={12} key={location.id}>
+                <LocationCard
+                  location={location}
+                  onSave={onSave}
+                  onDelete={onDelete}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </>
       )}
     </>
   );
